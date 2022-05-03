@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.franco.convidados.viewmodel.GuestFormViewModel
 import com.franco.convidados.R
 import com.franco.convidados.databinding.ActivityGuestFormBinding
+import com.franco.convidados.service.constants.GuestConstants
 
 class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -22,6 +23,7 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
 
         mViewModel = ViewModelProvider(this).get(GuestFormViewModel::class.java)
 
+        loadData()
         setListener()
         observe()
     }
@@ -35,6 +37,14 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun loadData() {
+        val bundle = intent.extras
+        if (bundle != null) {
+            val id = bundle.getInt(GuestConstants.GUESTID)
+            mViewModel.load(id)
+        }
+    }
+
     private fun observe() {
         mViewModel.saveGuest.observe(this, Observer {
            if (it) {
@@ -43,6 +53,14 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
                Toast.makeText(this,"Falha",Toast.LENGTH_SHORT).show()
            }
             finish()
+        })
+        mViewModel.guest.observe(this, Observer {
+            binding.editName.setText(it.name)
+            if (it.presence) {
+                binding.radioPresence.isChecked = true
+            }else {
+                binding.radioAbsent.isChecked = true
+            }
         })
     }
 
