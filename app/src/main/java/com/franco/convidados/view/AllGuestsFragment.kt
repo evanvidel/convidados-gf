@@ -14,23 +14,19 @@ import com.franco.convidados.service.constants.GuestConstants
 import com.franco.convidados.service.constants.GuestConstants.Companion.GUESTID
 import com.franco.convidados.view.adapter.GuestAdapter
 import com.franco.convidados.view.listener.GuestListener
-import com.franco.convidados.viewmodel.AllGuestsViewModel
+import com.franco.convidados.viewmodel.GuestsViewModel
 
 class AllGuestsFragment : Fragment() {
 
     private var _binding: FragmentAllBinding? = null
-    private lateinit var allGuestsViewModel: AllGuestsViewModel
+    private lateinit var mViewModel: GuestsViewModel
     private val mAdapter: GuestAdapter = GuestAdapter()
     private lateinit var mListener: GuestListener
 
     private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        allGuestsViewModel = ViewModelProvider(this).get(AllGuestsViewModel::class.java)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, s: Bundle?): View {
+        mViewModel = ViewModelProvider(this).get(GuestsViewModel::class.java)
 
         _binding = FragmentAllBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -49,6 +45,11 @@ class AllGuestsFragment : Fragment() {
                 intent.putExtras(bundle)
                 startActivity(intent)
             }
+
+            override fun onDelete(id: Int) {
+                mViewModel.delete(id)
+                mViewModel.load(GuestConstants.FILTER.EMPTY)
+            }
         }
         mAdapter.attchListener(mListener)
         observer()
@@ -57,11 +58,11 @@ class AllGuestsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        allGuestsViewModel.load()
+        mViewModel.load(GuestConstants.FILTER.EMPTY)
     }
 
     private fun observer() {
-        allGuestsViewModel.guestList.observe(viewLifecycleOwner, Observer {
+        mViewModel.guestList.observe(viewLifecycleOwner, Observer {
             mAdapter.updateGuests(it)
 
         })
