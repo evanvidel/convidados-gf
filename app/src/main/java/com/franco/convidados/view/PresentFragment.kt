@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.franco.convidados.databinding.FragmentPresentBinding
@@ -27,7 +26,7 @@ class PresentFragment : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, s: Bundle?): View {
-        mViewModel = ViewModelProvider(this).get(GuestsViewModel::class.java)
+        mViewModel = ViewModelProvider(this)[GuestsViewModel::class.java]
         _binding = FragmentPresentBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -61,9 +60,9 @@ class PresentFragment : Fragment() {
     }
 
     private fun observer() {
-        mViewModel.guestList.observe(viewLifecycleOwner, Observer {
+        mViewModel.guestList.observe(viewLifecycleOwner) {
             mAdapter.updateGuests(it)
 
-        })
+        }
     }
 }
